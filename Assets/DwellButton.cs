@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(EyeTrackingTarget))]
+[RequireComponent(typeof(Interactable))]
 public class DwellButton : BaseFocusHandler
 {
     [Tooltip("Configurable duration to trigger an event if a user has been looking at the target for more than this duration.")]
@@ -26,6 +27,7 @@ public class DwellButton : BaseFocusHandler
 
     // list of profiles can match themes with gameObjects
     [SerializeField]
+    [HideInInspector]
     private List<InteractableProfileItem> Profiles = new List<InteractableProfileItem>();
    
     // the state logic for comparing state
@@ -35,7 +37,9 @@ public class DwellButton : BaseFocusHandler
     private List<InteractableThemeBase> runningThemes = new List<InteractableThemeBase>();
     
     // a collection of states and basic state logic
-    private States EyeGazeStates;
+    public States EyeGazeStates;
+
+    private Interactable interactable;
 
     private DateTime cursorEnterTime;
     private bool hadFocus = false;
@@ -43,11 +47,11 @@ public class DwellButton : BaseFocusHandler
 
     private void Awake()
     {
-        EyeGazeStates = States.GetDefaultInteractableStates();
-
         StateManager = EyeGazeStates.SetupLogic();
 
         SetupThemes();
+
+        interactable = GetComponent<Interactable>();
 
         // Init variables
         cursorEnterTime = DateTime.MaxValue;
@@ -55,7 +59,7 @@ public class DwellButton : BaseFocusHandler
 
     protected virtual void SetupThemes()
     {
-        // TODO: Check Profiles[0].Themes[0].States?
+        // TODO: Check Profiles[0].Themes[0].States? == EyeGazeStates
 
         // Flatten input profile & themes to our runningThemes
         for (int i = 0; i < Profiles.Count; i++)
@@ -107,29 +111,29 @@ public class DwellButton : BaseFocusHandler
             else if (!wasSelected)
             {
                 double cursorOnTime = (DateTime.UtcNow - this.cursorEnterTime).TotalSeconds;
+                bool isFocus = IsStateActive(InteractableStates.InteractableStateEnum.Focus);
+                bool isTargeted = IsStateActive(InteractableStates.InteractableStateEnum.Targeted);
 
                 if (cursorOnTime > timeToTriggerFocusInSec 
-                    && !IsStateActive(InteractableStates.InteractableStateEnum.Focus))
+                    && !isFocus && !isTargeted)
                 {
                     SetStateActive(InteractableStates.InteractableStateEnum.Focus, true);
                 }
 
                 if (cursorOnTime > timeToTriggerDwellInSec
-                    && !IsStateActive(InteractableStates.InteractableStateEnum.Targeted))
+                    && !isTargeted)
                 {
                     SetStateActive(InteractableStates.InteractableStateEnum.Targeted, true);
-
                 }
 
                 if (cursorOnTime > timeToTriggerSelectInSec)
                 {
-                    // kill everything and don't reset till
+                    // We were selected, reset states and wait till new focus
                     wasSelected = true;
+                    ResetStates();
 
-                    // perform selection on interactable?
-
-                    // TODO: Will this ease values back?
-                    //ResetStates();
+                    // Perform selection on the interactable
+                    this.interactable.OnPointerClicked(null);
                 }
             }
         }
@@ -141,7 +145,32 @@ public class DwellButton : BaseFocusHandler
                 var s = StateManager.CurrentState();
                 int t = StateManager.CurrentState().ActiveIndex;
 
-                runningThemes[i].OnUpdate(StateManager.CurrentState().ActiveIndex, false);
+                runningThemes[i].OnUpdate(StateManager.CurrentState().ActiveIndex, this.interactable);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public override void OnBeforeFocusChange(FocusEventData eventData)
+    {
+        // If we're the new target object,
+        // add the pointer to the list of focusers.
+        if (eventData.NewFocusedObject == gameObject && eventData.Pointer.InputSourceParent.SourceType == InputSourceType.Eyes)
+        {
+            eventData.Pointer.FocusTarget = this;
+            Focusers.Add(eventData.Pointer);
+        }
+        // If we're the old focused target object,
+        // remove the pointer from our list.
+        else if (eventData.OldFocusedObject == gameObject)
+        {
+            Focusers.Remove(eventData.Pointer);
+
+            // If there is no new focused target
+            // clear the FocusTarget field from the Pointer.
+            if (eventData.NewFocusedObject == null)
+            {
+                eventData.Pointer.FocusTarget = null;
             }
         }
     }

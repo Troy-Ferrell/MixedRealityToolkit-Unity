@@ -24,7 +24,7 @@ MonoBehaviour:
     Value: 0
     ActiveIndex: 1
   - Name: Targeted
-    Index: 2
+    Index: 3
     Bit: 4
     Value: 0
     ActiveIndex: 2
