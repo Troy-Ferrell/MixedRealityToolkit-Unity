@@ -135,6 +135,7 @@ namespace Microsoft.MixedReality.Toolkit.Input.Editor
         {
             var profile = target as BaseMixedRealityProfile;
             return MixedRealityToolkit.IsInitialized && profile != null &&
+                   MixedRealityToolkit.Instance.HasActiveProfile &&
                    MixedRealityToolkit.Instance.ActiveProfile.InputSystemProfile != null &&
                    profile == MixedRealityToolkit.Instance.ActiveProfile.InputSystemProfile.ControllerVisualizationProfile;
         }
@@ -145,7 +146,7 @@ namespace Microsoft.MixedReality.Toolkit.Input.Editor
 
             EditorGUILayout.Space();
 
-            if (MixedRealityEditorUtility.RenderIndentedButton(ControllerAddButtonContent, EditorStyles.miniButton))
+            if (InspectorUIUtility.RenderIndentedButton(ControllerAddButtonContent, EditorStyles.miniButton))
             {
                 controllerList.InsertArrayElementAtIndex(controllerList.arraySize);
                 var index = controllerList.arraySize - 1;
