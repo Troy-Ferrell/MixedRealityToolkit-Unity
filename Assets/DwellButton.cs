@@ -133,7 +133,7 @@ public class DwellButton : BaseFocusHandler
                     ResetStates();
 
                     // Perform selection on the interactable
-                    this.interactable.OnPointerClicked(null);
+                    this.interactable.TriggerOnClick();
                 }
             }
         }
