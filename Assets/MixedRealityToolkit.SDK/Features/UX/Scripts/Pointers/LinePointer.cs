@@ -108,8 +108,14 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             lineBase.UpdateMatrix();
 
+            // TODO: if IsFocusLocked && IsTargetPositionLockedOnFocusLock
+            // then we don't want to update raystep?
+
+            Vector3 start = Position;
+            Vector3 end = Position + Rotation * Vector3.forward * DefaultPointerExtent;
             // Set our first and last points
-            if (IsFocusLocked && IsTargetPositionLockedOnFocusLock && Result != null)
+            //if (IsFocusLocked && IsTargetPositionLockedOnFocusLock && Result != null)
+            if (Result?.CurrentPointerTarget != null)
             {
                 // Make the final point 'stick' to the target at the distance of the target
                 SetLinePoints(Position, Result.Details.Point, Result.Details.RayDistance);
@@ -120,11 +126,16 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
 
             // Make sure our array will hold
-            if (Rays == null || Rays.Length != LineCastResolution)
+            if (Rays == null) //|| Rays.Length != LineCastResolution)
             {
-                Rays = new RayStep[LineCastResolution];
+                Rays = new RayStep[1];
             }
 
+            //Vector3 mid = (start + end) / 2.0f;
+            Rays[0].UpdateRayStep(ref start, ref end);
+            //Rays[1].UpdateRayStep(ref mid, ref end);
+
+            /*
             float stepSize = 1f / Rays.Length;
             Vector3 lastPoint = lineBase.GetUnClampedPoint(0f);
             for (int i = 0; i < Rays.Length; i++)
@@ -132,7 +143,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 Vector3 currentPoint = lineBase.GetUnClampedPoint(stepSize * (i + 1));
                 Rays[i].UpdateRayStep(ref lastPoint, ref currentPoint);
                 lastPoint = currentPoint;
-            }
+            }*/
         }
 
         /// <inheritdoc />
@@ -176,6 +187,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 lineRenderer.LineColor = lineColor;
             }
 
+            // TODO: Troy
+            /*
             // Used to ensure the line doesn't extend beyond the cursor
             float cursorOffsetWorldLength = (BaseCursor != null) ? BaseCursor.SurfaceCursorDistance : 0;
 
@@ -191,7 +204,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 // Otherwise clamp the line end by the clear distance
                 float clearLocalLength = lineBase.GetNormalizedLengthFromWorldLength(clearWorldLength - cursorOffsetWorldLength, maxClampLineSteps);
                 LineBase.LineEndClamp = clearLocalLength;
-            }
+            }*/
         }
 
         protected virtual void SetLinePoints(Vector3 startPoint, Vector3 endPoint, float distance)
