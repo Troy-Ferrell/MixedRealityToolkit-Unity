@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.﻿
 
+using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Utilities.Editor;
 using System;
 using System.Collections.Generic;
@@ -126,6 +127,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
                 // upon the user experience by limiting the set of things that show in the picker by restricting
                 // the set of profiles listed to only that type.
                 profileType = GetProfileTypesForService(serviceType).FirstOrDefault();
+                Debug.Log(profileType);
             }
 
             // If the profile type is still null, just set it to base profile type
@@ -267,6 +269,17 @@ namespace Microsoft.MixedReality.Toolkit.Editor
                 return Array.Empty<Type>();
             }
 
+            HashSet<Type> allTypes = new HashSet<Type>();
+            foreach (var profileType in TypeCacheUtility.GetSubClasses<BaseMixedRealityProfile>())
+            {
+                if (IsProfileForService(profileType, serviceType))
+                {
+                    allTypes.Add(profileType);
+                }
+            }
+
+            return allTypes.ToReadOnlyCollection();
+            /*
             // This is a little inefficient in that it has to enumerate all of the mixed reality
             // profiles in order to make this enumeration. It would be possible to cache the results
             // of this, but then it would be necessary to listen to file/asset creation/destruction
@@ -283,6 +296,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
                 }
             }
             return allTypes.ToReadOnlyCollection();
+            */
         }
 
         /// <summary>
