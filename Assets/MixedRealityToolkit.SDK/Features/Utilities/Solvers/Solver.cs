@@ -229,6 +229,7 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Solvers
                 SolverHandler.RegisterSolver(this);
             }
         }
+
         protected virtual void OnDestroy()
         {
             if (SolverHandler != null)
