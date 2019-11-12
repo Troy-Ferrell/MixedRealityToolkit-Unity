@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.MixedReality.Toolkit.Rendering;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -157,6 +157,35 @@ namespace Microsoft.MixedReality.Toolkit
         public static void DestroyGameObject(GameObject gameObject, float t = 0.0f)
         {
             UnityObjectExtensions.DestroyObject(gameObject, t);
+        }
+
+        /// <summary>
+        /// Set the following Shader Property values onto this GameObject's renderer of type T. 
+        /// </summary>
+        /// <remarks>
+        /// Uses MaterialPropertyBlocks to ensure a new material instance is not created
+        /// </remarks>
+        /// <typeparam name="T">Type of renderer to retrieve</typeparam>
+        /// <param name="gameObject">GameObject to target for material property changes</param>
+        /// <param name="properties">list of shader properties to apply</param>
+        public static MaterialPropertyBlock SetMaterialProperties<T>(this GameObject gameObject, IEnumerable<ShaderProperty> properties) where T : Renderer
+        {
+            MaterialPropertyBlock materialBlock = new MaterialPropertyBlock();
+            var renderer = gameObject.GetComponent<T>();
+            if (renderer != null)
+            {
+                renderer.GetPropertyBlock(materialBlock);
+
+                foreach (var p in properties)
+                {
+                    p.ApplyProperty(materialBlock);
+                }
+
+                renderer.SetPropertyBlock(materialBlock);
+                return materialBlock;
+            }
+
+            return null;
         }
     }
 }
