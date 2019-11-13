@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class TestInstancing : MonoBehaviour
 {
-    public Texture[] textures;
+    //public Texture[] textures;
 
     void Start()
     {
-        int index = Random.Range(0, textures.Length - 1);
+        //int index = Random.Range(0, textures.Length - 1);
         // Force material instance
-        GetComponent<MeshRenderer>().material.mainTexture = textures[index];
+        //GetComponent<MeshRenderer>().material.mainTexture = textures[index];
     }
 }
