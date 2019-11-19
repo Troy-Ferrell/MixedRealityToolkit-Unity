@@ -308,13 +308,12 @@ namespace Microsoft.MixedReality.Toolkit.SpatialObjectMeshObserver
         /// <inheritdoc />
         public IReadOnlyDictionary<int, SpatialAwarenessMeshObject> Meshes => new Dictionary<int, SpatialAwarenessMeshObject>(meshes);
 
-        private int meshPhysicsLayer = 31;
+        private int meshPhysicsLayer = DefaultSpatialAwarenessLayer;
 
         /// <inheritdoc />
         public int MeshPhysicsLayer
         {
             get => meshPhysicsLayer;
-
             set
             {
                 if ((value < 0) || (value > 31))

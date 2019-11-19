@@ -14,7 +14,7 @@ namespace Microsoft.MixedReality.Toolkit.SpatialAwareness
         AutoStartBehavior StartupBehavior { get; set; }
 
         /// <summary>
-        /// Get or sets the default Unity Physics Layer on which to set the spatial object.
+        /// Get the default Unity Physics Layer on which to set the spatial object.
         /// </summary>
         int DefaultPhysicsLayer { get; }
 

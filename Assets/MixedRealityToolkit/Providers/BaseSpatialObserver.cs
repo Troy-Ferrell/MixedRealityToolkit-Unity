@@ -51,6 +51,11 @@ namespace Microsoft.MixedReality.Toolkit.SpatialAwareness
         }
 
         /// <summary>
+        /// Default dedicated layer for spatial awareness layer used by most components in MRTK
+        /// </summary>
+        public const int DefaultSpatialAwarenessLayer = 31;
+
+        /// <summary>
         /// The spatial awareness system that is associated with this observer.
         /// </summary>
         protected IMixedRealitySpatialAwarenessSystem SpatialAwarenessSystem { get; private set; }
@@ -106,7 +111,7 @@ namespace Microsoft.MixedReality.Toolkit.SpatialAwareness
         public AutoStartBehavior StartupBehavior { get; set; } = AutoStartBehavior.AutoStart;
 
         /// <inheritdoc />
-        public int DefaultPhysicsLayer { get; } = 31;
+        public int DefaultPhysicsLayer { get; } = DefaultSpatialAwarenessLayer;
 
         /// <inheritdoc />
         public bool IsRunning { get; protected set; } = false;

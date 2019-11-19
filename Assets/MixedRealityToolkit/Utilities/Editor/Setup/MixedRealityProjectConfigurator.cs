@@ -15,7 +15,7 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
     /// </summary>
     public class MixedRealityProjectConfigurator
     {
-        private const int SpatialAwarenessDefaultLayer = 31;
+        private const int SpatialAwarenessDefaultLayer = 31;// See BaseSpatialObserver.DefaultSpatialAwarenessLayer
         private const AndroidSdkVersions MinAndroidSdk = AndroidSdkVersions.AndroidApiLevel24; // Android 7.0
         private const int RequirediOSArchitecture = 1; // Per https://docs.unity3d.com/ScriptReference/PlayerSettings.SetArchitecture.html, 1 == ARM64
         private const float iOSMinOsVersion = 11.0f;

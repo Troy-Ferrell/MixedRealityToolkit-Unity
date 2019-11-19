@@ -312,7 +312,7 @@ namespace Microsoft.MixedReality.Toolkit.WindowsMixedReality.SpatialAwareness
         /// <inheritdoc />
         public IReadOnlyDictionary<int, SpatialAwarenessMeshObject> Meshes => new Dictionary<int, SpatialAwarenessMeshObject>(meshes) as IReadOnlyDictionary<int, SpatialAwarenessMeshObject>;
 
-        private int meshPhysicsLayer = 31;
+        private int meshPhysicsLayer = DefaultSpatialAwarenessLayer;
 
         /// <inheritdoc />
         public int MeshPhysicsLayer
