@@ -319,7 +319,6 @@ namespace Microsoft.MixedReality.Toolkit.Tests
             // Test High Priority cube, although farthest, is selected as raycast target
             //
             yield return PlayModeTestUtilities.WaitForInputSystemUpdate();
-            Debug.Log(shellHandRayPointer.Result?.CurrentPointerTarget);
             Assert.AreEqual(highPriorityCube, shellHandRayPointer.Result?.CurrentPointerTarget, $"{highPriorityCube.name} should be raycast target by shell hand ray pointer");
 
             //
