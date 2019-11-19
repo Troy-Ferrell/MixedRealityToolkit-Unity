@@ -25,6 +25,8 @@ namespace Microsoft.MixedReality.Toolkit.Tests
 {
     public class FocusProviderTests
     {
+        private const int NumHandSteps = 1;
+
         [SetUp]
         public void Setup()
         {
@@ -79,11 +81,9 @@ namespace Microsoft.MixedReality.Toolkit.Tests
         public IEnumerator TestGazeProviderTargetNotNull()
         {
             TestUtilities.PlayspaceToOriginLookingForward();
-            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.position = Vector3.forward;
+            var cube = CreateTestCube(Vector3.forward, 1.0f);
 
-            yield return null;
-            yield return null;
+            yield return PlayModeTestUtilities.WaitForInputSystemUpdate();
 
             Assert.NotNull(CoreServices.InputSystem.GazeProvider.GazeTarget, "GazeProvider target is null when looking at an object");
 
@@ -137,11 +137,7 @@ namespace Microsoft.MixedReality.Toolkit.Tests
         public IEnumerator TestDisableFocusObject()
         {
             TestUtilities.PlayspaceToOriginLookingForward();
-            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.position = Vector3.right;
-            cube.transform.localScale = Vector3.one * 0.2f;
-
-            const int numHandSteps = 1;
+            var cube = CreateTestCube(Vector3.right);
 
             // No initial focus
             cube.transform.position = Vector3.forward;
@@ -154,7 +150,7 @@ namespace Microsoft.MixedReality.Toolkit.Tests
             Assert.IsNull(handRayPointer.Result.CurrentPointerTarget);
 
             // Focus on cube
-            yield return hand.MoveTo(new Vector3(0.06f, -0.1f, 0.5f), numHandSteps);
+            yield return hand.MoveTo(new Vector3(0.06f, -0.1f, 0.5f), NumHandSteps);
             yield return null;
 
             Assert.AreEqual(cube, handRayPointer.Result.CurrentPointerTarget);
@@ -185,8 +181,6 @@ namespace Microsoft.MixedReality.Toolkit.Tests
             cube.transform.position = Vector3.right;
             cube.transform.localScale = Vector3.one * 0.2f;
 
-            const int numHandSteps = 1;
-
             // No initial focus
             cube.transform.position = Vector3.forward;
             TestHand hand = new TestHand(Handedness.Right);
@@ -198,7 +192,7 @@ namespace Microsoft.MixedReality.Toolkit.Tests
             Assert.IsNull(handRayPointer.Result.CurrentPointerTarget);
 
             // Focus lock cube
-            yield return hand.MoveTo(new Vector3(0.06f, -0.1f, 0.5f), numHandSteps);
+            yield return hand.MoveTo(new Vector3(0.06f, -0.1f, 0.5f), NumHandSteps);
             yield return hand.SetGesture(ArticulatedHandPose.GestureId.Pinch);
             yield return null;
 
@@ -227,11 +221,7 @@ namespace Microsoft.MixedReality.Toolkit.Tests
         public IEnumerator TestDestroyFocusObject()
         {
             TestUtilities.PlayspaceToOriginLookingForward();
-            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.position = Vector3.right;
-            cube.transform.localScale = Vector3.one * 0.2f;
-
-            const int numHandSteps = 1;
+            var cube = CreateTestCube(Vector3.right);
 
             // No initial focus
             cube.transform.position = Vector3.forward;
@@ -244,7 +234,7 @@ namespace Microsoft.MixedReality.Toolkit.Tests
             Assert.IsNull(handRayPointer.Result.CurrentPointerTarget);
 
             // Focus on cube
-            yield return hand.MoveTo(new Vector3(0.06f, -0.1f, 0.5f), numHandSteps);
+            yield return hand.MoveTo(new Vector3(0.06f, -0.1f, 0.5f), NumHandSteps);
             yield return null;
 
             Assert.AreEqual(cube, handRayPointer.Result.CurrentPointerTarget);
@@ -268,8 +258,6 @@ namespace Microsoft.MixedReality.Toolkit.Tests
             TestUtilities.PlayspaceToOriginLookingForward();
             var cube = CreateTestCube(Vector3.right);
 
-            const int numHandSteps = 1;
-
             // No initial focus
             cube.transform.position = Vector3.forward;
             TestHand hand = new TestHand(Handedness.Right);
@@ -281,7 +269,7 @@ namespace Microsoft.MixedReality.Toolkit.Tests
             Assert.IsNull(handRayPointer.Result.CurrentPointerTarget);
 
             // Focus lock cube
-            yield return hand.MoveTo(new Vector3(0.06f, -0.1f, 0.5f), numHandSteps);
+            yield return hand.MoveTo(new Vector3(0.06f, -0.1f, 0.5f), NumHandSteps);
             yield return hand.SetGesture(ArticulatedHandPose.GestureId.Pinch);
             yield return null;
 
@@ -298,8 +286,11 @@ namespace Microsoft.MixedReality.Toolkit.Tests
             Assert.IsTrue(ReferenceEquals(handRayPointer.Result.CurrentPointerTarget, null));
         }
 
+        /// <summary>
+        /// Test focus provider returns results based on custom prioritized layer mask array
+        /// </summary>
         [UnityTest]
-        public IEnumerator TestPriotizedLayerMask()
+        public IEnumerator TestPrioritizedLayerMask()
         {
             TestUtilities.PlayspaceToOriginLookingForward();
 
@@ -350,7 +341,6 @@ namespace Microsoft.MixedReality.Toolkit.Tests
         {
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.AddComponent<ManipulationHandler>(); // Add focus handler so focus can lock
-            //cube.AddComponent<FocusHandler>(); // Add focus handler so focus can lock
             cube.transform.position = position;
             cube.transform.localScale = Vector3.one * scale;
             return cube;
