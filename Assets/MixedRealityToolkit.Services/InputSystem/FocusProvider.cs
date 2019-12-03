@@ -55,6 +55,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
         private readonly int maxQuerySceneResults = 128;
         private bool focusIndividualCompoundCollider = false;
 
+        /// <summary>
+        /// Pointer Mediator class instances organized by input source id
+        /// </summary>
         public IReadOnlyDictionary<uint, IMixedRealityPointerMediator> PointerMediators => pointerMediators;
 
         /// <summary>
@@ -278,14 +281,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
             /// <inheritdoc />
             public FocusDetails Details
             {
-                get
-                {
-                    return focusDetails;
-                }
-                set
-                {
-                    focusDetails = value;
-                }
+                get => focusDetails;
+                set => focusDetails = value;
             }
 
             /// <inheritdoc />
@@ -319,7 +316,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             /// <summary>
             /// Returns true if the current pointer target has been disabled or destroyed
             /// </summary>
-            public bool IsCurrentPointerTargetInvalid => ((CurrentPointerTarget != null && !CurrentPointerTarget.activeInHierarchy)) ||
+            public bool IsCurrentPointerTargetInvalid => (CurrentPointerTarget != null && !CurrentPointerTarget.activeInHierarchy) ||
                 (CurrentPointerTarget == null && !ReferenceEquals(CurrentPointerTarget, null));
 
             private FocusDetails focusDetails = new FocusDetails();
@@ -493,7 +490,10 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         public override void Initialize()
         {
-            if (!IsSetupValid) { return; }
+            if (!IsSetupValid)
+            {
+                return;
+            }
 
             if (Application.isPlaying)
             {
@@ -698,17 +698,21 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         public bool IsPointerRegistered(IMixedRealityPointer pointer)
         {
-            Debug.Assert(pointer.PointerId != 0, $"{pointer} does not have a valid pointer id!");
-            PointerData pointerData;
-            return TryGetPointerData(pointer, out pointerData);
+            if (!IsPointerValid(pointer))
+            {
+                return false;
+            }
+
+            return TryGetPointerData(pointer, out PointerData pointerData);
         }
 
         /// <inheritdoc />
         public bool RegisterPointer(IMixedRealityPointer pointer)
         {
-            Debug.Assert(pointer.PointerId != 0, $"{pointer} does not have a valid pointer id!");
-
-            if (IsPointerRegistered(pointer)) { return false; }
+            if (IsPointerRegistered(pointer))
+            {
+                return false;
+            }
 
             pointers.Add(new PointerData(pointer));
 
@@ -728,39 +732,40 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 return;
             }
 
-            IMixedRealityPointerMediator mediator = null;
-
-            var mediatorType = CoreServices.InputSystem?.InputSystemProfile.PointerProfile.PointerMediator.Type;
-            if (mediatorType != null)
+            if (!pointerMediators.ContainsKey(inputSource.SourceId))
             {
-                try
+                IMixedRealityPointerMediator mediator = null;
+
+                var mediatorType = CoreServices.InputSystem?.InputSystemProfile.PointerProfile.PointerMediator.Type;
+                if (mediatorType != null)
                 {
-                    // First, try to use constructor used by DefaultPointerMediator (it takes a IPointePreferences)
-                    mediator = Activator.CreateInstance(mediatorType, this) as IMixedRealityPointerMediator;
-                }
-                catch (MissingMethodException)
-                {
-                    // We are using custom mediator not provided by MRTK, instantiate with empty constructor
-                    mediator = Activator.CreateInstance(mediatorType) as IMixedRealityPointerMediator;
+                    try
+                    {
+                        // First, try to use constructor used by DefaultPointerMediator (it takes a IPointePreferences)
+                        mediator = Activator.CreateInstance(mediatorType, this) as IMixedRealityPointerMediator;
+                    }
+                    catch (MissingMethodException)
+                    {
+                        // We are using custom mediator not provided by MRTK, instantiate with empty constructor
+                        mediator = Activator.CreateInstance(mediatorType) as IMixedRealityPointerMediator;
+                    }
+
+                    if (mediator != null)
+                    {
+                        mediator.RegisterPointers(inputSource.Pointers);
+
+                        pointerMediators.Add(inputSource.SourceId, mediator);
+                    }
                 }
             }
 
-            if (mediator != null)
-            {
-                mediator.RegisterPointers(inputSource.Pointers);
-
-                if (!pointerMediators.ContainsKey(inputSource.SourceId))
-                {
-                    pointerMediators.Add(inputSource.SourceId, mediator);
-                }
-            }
-
+            uint gazeInputSourceID = CoreServices.InputSystem.GazeProvider.GazeInputSource.SourceId;
             for (int i = 0; i < inputSource.Pointers.Length; i++)
             {
                 RegisterPointer(inputSource.Pointers[i]);
 
                 // Special Registration for Gaze
-                if (inputSource.SourceId == CoreServices.InputSystem.GazeProvider.GazeInputSource.SourceId && gazeProviderPointingData == null)
+                if (inputSource.SourceId == gazeInputSourceID && gazeProviderPointingData == null)
                 {
                     gazeProviderPointingData = new PointerData(inputSource.Pointers[i]);
                 }
@@ -770,15 +775,15 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         public bool UnregisterPointer(IMixedRealityPointer pointer)
         {
-            Debug.Assert(pointer.PointerId != 0, $"{pointer} does not have a valid pointer id!");
-
-            PointerData pointerData;
-            if (!TryGetPointerData(pointer, out pointerData)) { return false; }
+            if (!IsPointerValid(pointer) || !TryGetPointerData(pointer, out PointerData pointerData))
+            {
+                return false;
+            }
 
             // Raise focus events if needed.
-            if (pointerData.CurrentPointerTarget != null)
+            GameObject unfocusedObject = pointerData.CurrentPointerTarget;
+            if (unfocusedObject != null)
             {
-                GameObject unfocusedObject = pointerData.CurrentPointerTarget;
                 bool objectIsStillFocusedByOtherPointer = false;
 
                 foreach (var otherPointer in pointers)
@@ -1089,6 +1094,17 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 // The gaze cursor's visibility is controlled by IsInteractionEnabled
                 gazePointer.IsInteractionEnabled = gazePointerStateMachine.IsGazePointerActive;
             }
+        }
+
+        private bool IsPointerValid(IMixedRealityPointer pointer)
+        {
+            if (pointer == null || pointer.PointerId == 0)
+            {
+                Debug.LogError($"{pointer} is not valid or does not have a valid pointer id!");
+                return false;
+            }
+
+            return true;
         }
 
         #region Physics Raycasting
@@ -1422,7 +1438,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 UnregisterPointer(eventData.InputSource.Pointers[i]);
             }
         }
-
 
         #endregion ISourceState Implementation
 
