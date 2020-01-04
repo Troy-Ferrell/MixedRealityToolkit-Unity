@@ -14,6 +14,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
     [HelpURL("https://microsoft.github.io/MixedRealityToolkit-Unity/Documentation/Input/InputActions.html")]
     public class MixedRealityInputActionsProfile : BaseMixedRealityProfile
     {
+        // TODO: Troy - remove?
         private readonly string[] defaultInputActions =
         {
             "Select",
@@ -44,13 +45,16 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         [SerializeField]
         [Tooltip("The list of actions users can do in your application.")]
-        private MixedRealityInputAction[] inputActions =
+        private MixedRealityInputAction[] inputActions;
+        // TODO: Troy - remove
+        /*
         {
             // 0 is reserved for "None"
             new MixedRealityInputAction(1, "Select"),
             new MixedRealityInputAction(2, "Menu"),
             new MixedRealityInputAction(3, "Grip")
         }; // Examples only, to be refined later
+        */
 
         /// <summary>
         /// The list of actions users can do in your application.
@@ -70,7 +74,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             for (uint i = 0; i < defaultInputActions.Length; i++)
             {
-                defaultActions.Add(new MixedRealityInputAction(i, defaultInputActions[i], defaultInputActionsAxis[i]));
+                defaultActions.Add(new MixedRealityInputAction(defaultInputActions[i], defaultInputActionsAxis[i]));
             }
 
             for (int i = 0; i < inputActions.Length; i++)

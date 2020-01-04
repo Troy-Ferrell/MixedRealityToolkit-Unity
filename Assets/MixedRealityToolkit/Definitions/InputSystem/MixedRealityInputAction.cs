@@ -5,6 +5,7 @@ using Microsoft.MixedReality.Toolkit.Utilities;
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Microsoft.MixedReality.Toolkit.Input
 {
@@ -17,30 +18,28 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <summary>
         /// Constructor.
         /// </summary>
-        public MixedRealityInputAction(uint id, string description, AxisType axisConstraint = AxisType.None)
+        public MixedRealityInputAction(string action, AxisType axisConstraint = AxisType.None)
         {
-            this.id = id;
-            this.description = description;
+            this.action = action;
             this.axisConstraint = axisConstraint;
+
+#pragma warning disable 0618
+            // Fill obsolete variables to satifsy compiler
+            id = UInt32.MaxValue;
+            description = action;
+#pragma warning restore 0618
         }
 
-        public static MixedRealityInputAction None { get; } = new MixedRealityInputAction(0, "None");
-
-        /// <summary>
-        /// The Unique Id of this Input Action.
-        /// </summary>
-        public uint Id => id;
+        public static MixedRealityInputAction None { get; } = new MixedRealityInputAction("None", AxisType.None);
 
         [SerializeField]
-        private uint id;
+        [FormerlySerializedAs("description")]
+        private string action;
 
         /// <summary>
-        /// A short description of the Input Action.
+        /// The name and key for this input action. Acts as unique identifier
         /// </summary>
-        public string Description => description;
-
-        [SerializeField]
-        private string description;
+        public string Action => action;
 
         /// <summary>
         /// The Axis constraint for the Input Action
@@ -64,20 +63,28 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         bool IEqualityComparer.Equals(object left, object right)
         {
-            if (ReferenceEquals(null, left) || ReferenceEquals(null, right)) { return false; }
-            if (!(left is MixedRealityInputAction) || !(right is MixedRealityInputAction)) { return false; }
+            if (ReferenceEquals(null, left) || ReferenceEquals(null, right)
+                || !(left is MixedRealityInputAction) || !(right is MixedRealityInputAction))
+            {
+                return false;
+            }
+
             return ((MixedRealityInputAction)left).Equals((MixedRealityInputAction)right);
         }
 
         public bool Equals(MixedRealityInputAction other)
         {
-            return Id == other.Id &&
+            return Action == other.Action &&
                    AxisConstraint == other.AxisConstraint;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) { return false; }
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
             return obj is MixedRealityInputAction && Equals((MixedRealityInputAction)obj);
         }
 
@@ -88,9 +95,44 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         public override int GetHashCode()
         {
-            return $"{Id}.{AxisConstraint}".GetHashCode();
+            return $"{Action}.{AxisConstraint}".GetHashCode();
         }
 
         #endregion IEqualityComparer Implementation
+
+        #region Obsolete
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        [Obsolete("Use alternate constructor without id")]
+        public MixedRealityInputAction(uint id, string description, AxisType axisConstraint = AxisType.None)
+        {
+            this.id = id;
+            action = this.description = description;
+            this.axisConstraint = axisConstraint;
+        }
+
+        /// <summary>
+        /// The Unique Id of this Input Action.
+        /// </summary>
+        [Obsolete("Use Action property instead as unique identifer")]
+        public uint Id => id;
+
+        [SerializeField]
+        [Obsolete("Use Action property instead as unique identifer")]
+        private uint id;
+
+        [SerializeField]
+        [Obsolete("Use Action property instead")]
+        private string description;
+
+        /// <summary>
+        /// A short description of the Input Action.
+        /// </summary>
+        [Obsolete("Use Action property instead")]
+        public string Description => description;
+
+        #endregion
     }
 }
