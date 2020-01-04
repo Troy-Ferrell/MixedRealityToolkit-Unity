@@ -23,6 +23,8 @@ namespace Microsoft.MixedReality.Toolkit.Input.Editor
 
             using (new EditorGUI.PropertyScope(rect, content, property))
             {
+                //MixedRealityInputActions.Default.InputActions.
+
                 // calculate field rectangle with half of total drawer length for each
                 var fieldWidth = rect.width * 0.5f;
                 var keywordRect = new Rect(rect.x, rect.y, fieldWidth, rect.height);
