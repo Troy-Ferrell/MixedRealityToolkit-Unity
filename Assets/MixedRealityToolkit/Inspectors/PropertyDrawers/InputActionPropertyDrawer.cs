@@ -10,12 +10,29 @@ namespace Microsoft.MixedReality.Toolkit.Input.Editor
     [CustomPropertyDrawer(typeof(MixedRealityInputAction))]
     public class InputActionPropertyDrawer : PropertyDrawer
     {
+        // TODO: Troy - Remove
+        /*
         private static MixedRealityInputActionsProfile profile = null;
         private static GUIContent[] actionLabels = { new GUIContent("Missing Input Action Profile") };
         private static int[] actionIds = { 0 };
+        */
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent content)
         {
+            // TODO: Troy -> Render custom vs drop-down
+
+            using (new EditorGUI.PropertyScope(rect, content, property))
+            {
+                // calculate field rectangle with half of total drawer length for each
+                var fieldWidth = rect.width * 0.5f;
+                var keywordRect = new Rect(rect.x, rect.y, fieldWidth, rect.height);
+                var keyCodeRect = new Rect(rect.x + fieldWidth, rect.y, fieldWidth, rect.height);
+
+                EditorGUI.PropertyField(keywordRect, property.FindPropertyRelative("action"), GUIContent.none);
+                EditorGUI.PropertyField(keyCodeRect, property.FindPropertyRelative("axisConstraint"), GUIContent.none);
+            }
+
+            /*
             if (!MixedRealityToolkit.IsInitialized || !MixedRealityToolkit.Instance.HasActiveProfile)
             {
                 profile = null;
@@ -82,8 +99,8 @@ namespace Microsoft.MixedReality.Toolkit.Input.Editor
                     }
                 }
             }
-
             EditorGUI.EndProperty();
+            */
         }
     }
 }

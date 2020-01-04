@@ -74,7 +74,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         public bool Equals(MixedRealityInputAction other)
         {
-            return Action == other.Action &&
+            return string.Equals(Action, other.action, StringComparison.CurrentCultureIgnoreCase) &&
                    AxisConstraint == other.AxisConstraint;
         }
 

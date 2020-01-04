@@ -90,10 +90,10 @@ namespace Microsoft.MixedReality.Toolkit.Input.Editor
 
             var inputActions = GetInputActions();
             baseActionLabels = inputActions.Where(action => action.AxisConstraint != AxisType.None && action.AxisConstraint != AxisType.Raw)
-                                            .Select(action => action.Description).ToArray();
+                                            .Select(inputAction => inputAction.Action).ToArray();
 
             baseActionIds = inputActions.Where(action => action.AxisConstraint != AxisType.None && action.AxisConstraint != AxisType.Raw)
-                                        .Select(action => (int)action.Id).ToArray();
+                                        .Select(inputAction => (int)inputAction.Id).ToArray();
 
             isInitialized = true;
         }
