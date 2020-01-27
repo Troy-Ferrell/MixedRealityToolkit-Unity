@@ -464,9 +464,10 @@ Shader "Mixed Reality Toolkit/Standard"
 #endif
 
 #if defined(_CLIPPING_BOX)
+#define CLIPPING_BOX_ARRAY_SIZE 4
             fixed _ClipBoxSide;
-            float4 _ClipBoxSize;
-            float4x4 _ClipBoxInverseTransform;
+            float4 _ClipBoxSize[CLIPPING_BOX_ARRAY_SIZE];
+            float4x4 _ClipBoxInverseTransform[CLIPPING_BOX_ARRAY_SIZE];
 #endif
 
 #if defined(_CLIPPING_PRIMITIVE)
@@ -891,7 +892,16 @@ Shader "Mixed Reality Toolkit/Standard"
                 primitiveDistance = min(primitiveDistance, PointVsSphere(i.worldPosition.xyz, _ClipSphere) * _ClipSphereSide);
 #endif
 #if defined(_CLIPPING_BOX)
-                primitiveDistance = min(primitiveDistance, PointVsBox(i.worldPosition.xyz, _ClipBoxSize.xyz, _ClipBoxInverseTransform) * _ClipBoxSide);
+
+                [unroll]
+                for (int boxIndex = 0; boxIndex < CLIPPING_BOX_ARRAY_SIZE; ++boxIndex)
+                {
+                    primitiveDistance = min(primitiveDistance, PointVsBox(i.worldPosition.xyz, 
+                        _ClipBoxSize[boxIndex].xyz,
+                        _ClipBoxInverseTransform[boxIndex]) * _ClipBoxSide);
+                }
+
+                //primitiveDistance = min(primitiveDistance, PointVsBox(i.worldPosition.xyz, _ClipBoxSize.xyz, _ClipBoxInverseTransform) * _ClipBoxSide);
 #endif
 #if defined(_CLIPPING_BORDER)
                 fixed3 primitiveBorderColor = lerp(_ClippingBorderColor, fixed3(0.0, 0.0, 0.0), primitiveDistance / _ClippingBorderWidth);
