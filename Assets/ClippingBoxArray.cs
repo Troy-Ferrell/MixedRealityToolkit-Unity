@@ -31,11 +31,14 @@ public class ClippingBoxArray : ClippingBox
         clipBoxInverseTransformArrayID = Shader.PropertyToID("_ClipBoxInverseTransformArray");
     }
 
-    private new void Update()
+    protected override void Update()
     {
         if (colliders == null) return;
 
-        Debug.Assert(colliders.Length <= ClippingBoxSize);
+        if (colliders.Length > ClippingBoxSize)
+        {
+            Debug.LogError($"Colliders property on ClippingBoxArray is larger than supported size of {ClippingBoxSize}");
+        }
 
         for (int i = 0; i < ClippingBoxSize; i++)
         {
