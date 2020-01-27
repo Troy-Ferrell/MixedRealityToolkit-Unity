@@ -19,7 +19,7 @@ inline float PointVsSphere(float3 worldPosition, float4 sphere)
 }
 #endif
 
-#if defined(_CLIPPING_BOX)
+#if defined(_CLIPPING_BOX) || defined(_CLIPPING_BOX_ARRAY)
 inline float PointVsBox(float3 worldPosition, float3 boxSize, float4x4 boxInverseTransform)
 {
     float3 distance = abs(mul(boxInverseTransform, float4(worldPosition, 1.0))) - boxSize;

@@ -24,6 +24,12 @@ public class ClippingBoxArray : ClippingBox
     }
 
     /// <inheritdoc />
+    protected override string ClippingSideProperty
+    {
+        get => "_ClipBoxArraySide";
+    }
+
+    /// <inheritdoc />
     protected override void Initialize()
     {
         base.Initialize();

@@ -472,7 +472,7 @@ Shader "Mixed Reality Toolkit/Standard"
 
 #if defined(_CLIPPING_BOX_ARRAY)
 #define CLIPPING_BOX_ARRAY_SIZE 4
-            fixed _ClipBoxSide;
+            fixed _ClipBoxArraySide;
             float4 _ClipBoxSizeArray[CLIPPING_BOX_ARRAY_SIZE];
             float4x4 _ClipBoxInverseTransformArray[CLIPPING_BOX_ARRAY_SIZE];
 #endif
@@ -908,7 +908,7 @@ Shader "Mixed Reality Toolkit/Standard"
                 {
                     primitiveDistance = min(primitiveDistance, PointVsBox(i.worldPosition.xyz, 
                         _ClipBoxSizeArray[boxIndex].xyz,
-                        _ClipBoxInverseTransformArray[boxIndex]) * _ClipBoxSide);
+                        _ClipBoxInverseTransformArray[boxIndex]) * _ClipBoxArraySide);
                 }
 #endif
 #if defined(_CLIPPING_BORDER)
