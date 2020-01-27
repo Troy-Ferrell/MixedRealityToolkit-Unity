@@ -219,6 +219,7 @@ Shader "Mixed Reality Toolkit/Standard"
             #pragma multi_compile _ _CLIPPING_PLANE
             #pragma multi_compile _ _CLIPPING_SPHERE
             #pragma multi_compile _ _CLIPPING_BOX
+            #pragma multi_compile _ _CLIPPING_BOX_ARRAY
 
             #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma shader_feature _DISABLE_ALBEDO_MAP
@@ -274,7 +275,7 @@ Shader "Mixed Reality Toolkit/Standard"
             #undef _NORMAL
 #endif
 
-#if defined(_CLIPPING_PLANE) || defined(_CLIPPING_SPHERE) || defined(_CLIPPING_BOX)
+#if defined(_CLIPPING_PLANE) || defined(_CLIPPING_SPHERE) || defined(_CLIPPING_BOX) || defined(_CLIPPING_BOX_ARRAY)
         #define _CLIPPING_PRIMITIVE
 #else
         #undef _CLIPPING_PRIMITIVE
@@ -464,10 +465,16 @@ Shader "Mixed Reality Toolkit/Standard"
 #endif
 
 #if defined(_CLIPPING_BOX)
+            fixed _ClipBoxSide;
+            float4 _ClipBoxSize;
+            float4x4 _ClipBoxInverseTransform;
+#endif
+
+#if defined(_CLIPPING_BOX_ARRAY)
 #define CLIPPING_BOX_ARRAY_SIZE 4
             fixed _ClipBoxSide;
-            float4 _ClipBoxSize[CLIPPING_BOX_ARRAY_SIZE];
-            float4x4 _ClipBoxInverseTransform[CLIPPING_BOX_ARRAY_SIZE];
+            float4 _ClipBoxSizeArray[CLIPPING_BOX_ARRAY_SIZE];
+            float4x4 _ClipBoxInverseTransformArray[CLIPPING_BOX_ARRAY_SIZE];
 #endif
 
 #if defined(_CLIPPING_PRIMITIVE)
@@ -892,16 +899,17 @@ Shader "Mixed Reality Toolkit/Standard"
                 primitiveDistance = min(primitiveDistance, PointVsSphere(i.worldPosition.xyz, _ClipSphere) * _ClipSphereSide);
 #endif
 #if defined(_CLIPPING_BOX)
+                primitiveDistance = min(primitiveDistance, PointVsBox(i.worldPosition.xyz, _ClipBoxSize.xyz, _ClipBoxInverseTransform) * _ClipBoxSide);
+#endif
+#if defined(_CLIPPING_BOX_ARRAY)
 
                 [unroll]
                 for (int boxIndex = 0; boxIndex < CLIPPING_BOX_ARRAY_SIZE; ++boxIndex)
                 {
                     primitiveDistance = min(primitiveDistance, PointVsBox(i.worldPosition.xyz, 
-                        _ClipBoxSize[boxIndex].xyz,
-                        _ClipBoxInverseTransform[boxIndex]) * _ClipBoxSide);
+                        _ClipBoxSizeArray[boxIndex].xyz,
+                        _ClipBoxInverseTransformArray[boxIndex]) * _ClipBoxSide);
                 }
-
-                //primitiveDistance = min(primitiveDistance, PointVsBox(i.worldPosition.xyz, _ClipBoxSize.xyz, _ClipBoxInverseTransform) * _ClipBoxSide);
 #endif
 #if defined(_CLIPPING_BORDER)
                 fixed3 primitiveBorderColor = lerp(_ClippingBorderColor, fixed3(0.0, 0.0, 0.0), primitiveDistance / _ClippingBorderWidth);

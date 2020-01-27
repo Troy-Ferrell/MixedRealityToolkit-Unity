@@ -16,12 +16,19 @@ public class ClippingBoxArray : ClippingBox
     private int clipBoxSizeArrayID;
     private int clipBoxInverseTransformArrayID;
 
+    /// <inheritdoc />
+    protected override string Keyword
+    {
+        get => "_CLIPPING_BOX_ARRAY";
+    }
+
+    /// <inheritdoc />
     protected override void Initialize()
     {
         base.Initialize();
 
-        clipBoxSizeArrayID = Shader.PropertyToID("_ClipBoxSize");
-        clipBoxInverseTransformArrayID = Shader.PropertyToID("_ClipBoxInverseTransform");
+        clipBoxSizeArrayID = Shader.PropertyToID("_ClipBoxSizeArray");
+        clipBoxInverseTransformArrayID = Shader.PropertyToID("_ClipBoxInverseTransformArray");
     }
 
     private new void Update()
