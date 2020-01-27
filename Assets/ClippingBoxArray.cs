@@ -15,6 +15,7 @@ public class ClippingBoxArray : ClippingBox
 
     private int clipBoxSizeArrayID;
     private int clipBoxInverseTransformArrayID;
+    private int lastFrameID = 0;
 
     /// <inheritdoc />
     protected override string Keyword
@@ -31,8 +32,13 @@ public class ClippingBoxArray : ClippingBox
         clipBoxInverseTransformArrayID = Shader.PropertyToID("_ClipBoxInverseTransformArray");
     }
 
-    protected override void Update()
+    private void UpdateData()
     {
+        if (lastFrameID == Time.frameCount)
+            return;
+
+        lastFrameID = Time.frameCount;
+
         if (colliders == null) return;
 
         if (colliders.Length > ClippingBoxSize)
@@ -56,6 +62,7 @@ public class ClippingBoxArray : ClippingBox
 
     protected override void UpdateShaderProperties(MaterialPropertyBlock materialPropertyBlock)
     {
+        UpdateData();
         materialPropertyBlock.SetVectorArray(clipBoxSizeArrayID, clipBoxSizeArray);
         materialPropertyBlock.SetMatrixArray(clipBoxInverseTransformArrayID, clipBoxInverseTransformArray);
     }

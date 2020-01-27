@@ -166,13 +166,13 @@ namespace Microsoft.MixedReality.Toolkit.Utilities
             }
         }
 
+#if UNITY_EDITOR
         // We need this class to be updated once per frame even when in edit mode. Ideally this would 
         // occur after all other objects are updated in LateUpdate(), but because the ExecuteInEditMode 
         // attribute only invokes Update() we handle edit mode updating in Update() and runtime updating 
         // in LateUpdate().
         protected virtual void Update()
         {
-#if UNITY_EDITOR
             if (Application.isPlaying)
             {
                 return;
@@ -180,8 +180,8 @@ namespace Microsoft.MixedReality.Toolkit.Utilities
 
             Initialize();
             UpdateRenderers();
-#endif
         }
+#endif
 
         protected void LateUpdate()
         {
