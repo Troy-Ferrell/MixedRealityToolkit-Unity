@@ -27,6 +27,15 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
             // Detect when we enter player mode so we can try checking for optimal configuration
             EditorApplication.playModeStateChanged += OnPlayStateModeChanged;
 
+            // Subscribe to editor application update which will call us once the editor is initialized and running
+            EditorApplication.update += OnInit;
+        }
+
+        private static void OnInit()
+        {
+            // We only want to execute once to initialize, unsubscribe from update event
+            EditorApplication.update -= OnInit;
+
             ShowProjectConfigurationDialog();
         }
 
@@ -99,7 +108,7 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
 
                 if (!AudioSettings.GetSpatializerPluginName().Equals(MSFT_AudioSpatializerPlugin))
                 {
-                    // If using UWP, developers should use the Microsoft Audio Spatilizer plugin
+                    // If using UWP, developers should use the Microsoft Audio Spatializer plugin
                     Debug.LogWarning("<b>Audio Spatializer Plugin</b> not currently set to <i>" + MSFT_AudioSpatializerPlugin + "</i>. Switch to <i>" + MSFT_AudioSpatializerPlugin + "</i> under <i>Project Settings</i> > <i>Audio</i> > <i>Spatializer Plugin</i>");
                 }
             }
