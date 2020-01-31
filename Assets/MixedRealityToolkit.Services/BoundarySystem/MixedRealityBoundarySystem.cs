@@ -18,28 +18,11 @@ namespace Microsoft.MixedReality.Toolkit.Boundary
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="registrar">The <see cref="IMixedRealityServiceRegistrar"/> instance that loaded the service.</param>
-        /// <param name="profile">The configuration profile for the service.</param>
-        /// <param name="scale">The application's configured <see cref="Utilities.ExperienceScale"/>.</param>
-        [System.Obsolete("This constructor is obsolete (registrar parameter is no longer required) and will be removed in a future version of the Microsoft Mixed Reality Toolkit.")]
-        public MixedRealityBoundarySystem(
-            IMixedRealityServiceRegistrar registrar,
-            MixedRealityBoundaryVisualizationProfile profile,
-            ExperienceScale scale) : this(profile, scale)
-        {
-            Registrar = registrar;
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         /// <param name="profile">The configuration profile for the service.</param>
         /// <param name="scale">The application's configured <see cref="Utilities.ExperienceScale"/>.</param>
         public MixedRealityBoundarySystem(
             MixedRealityBoundaryVisualizationProfile profile,
-            ExperienceScale scale) : base(profile, scale)
-        {
-        }
+            ExperienceScale scale) : base(profile, scale) { }
 
         #region IMixedRealityService Implementation
 
@@ -113,5 +96,24 @@ namespace Microsoft.MixedReality.Toolkit.Boundary
                 Debug.LogWarning("Tracking space unable to be set.");
             }
         }
+
+        #region Obsolete
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="registrar">The <see cref="IMixedRealityServiceRegistrar"/> instance that loaded the service.</param>
+        /// <param name="profile">The configuration profile for the service.</param>
+        /// <param name="scale">The application's configured <see cref="Utilities.ExperienceScale"/>.</param>
+        [System.Obsolete("This constructor is obsolete (registrar parameter is no longer required) and will be removed in a future version of the Microsoft Mixed Reality Toolkit.")]
+        public MixedRealityBoundarySystem(
+            IMixedRealityServiceRegistrar registrar,
+            MixedRealityBoundaryVisualizationProfile profile,
+            ExperienceScale scale) : this(profile, scale)
+        {
+            Registrar = registrar;
+        }
+
+        #endregion
     }
 }

@@ -18,23 +18,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="registrar">The <see cref="IMixedRealityServiceRegistrar"/> instance that loaded the service.</param>
-        /// <param name="profile">The configuration profile for the service.</param>
-        [Obsolete("This constructor is obsolete (registrar parameter is no longer required) and will be removed in a future version of the Microsoft Mixed Reality Toolkit.")]
-        public MixedRealityInputSystem(
-            IMixedRealityServiceRegistrar registrar,
-            MixedRealityInputSystemProfile profile) : this(profile)
-        {
-            Registrar = registrar;
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         /// <param name="profile">The configuration profile for the service.</param>
         public MixedRealityInputSystem(
-            MixedRealityInputSystemProfile profile) : base(profile)
-        { }
+            MixedRealityInputSystemProfile profile) : base(profile) { }
 
         /// <inheritdoc/>
         public override string Name { get; protected set; } = "Mixed Reality Input System";
@@ -1843,5 +1829,22 @@ namespace Microsoft.MixedReality.Toolkit.Input
         }
 
         #endregion Rules
+
+        #region Obsolete
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="registrar">The <see cref="IMixedRealityServiceRegistrar"/> instance that loaded the service.</param>
+        /// <param name="profile">The configuration profile for the service.</param>
+        [Obsolete("This constructor is obsolete (registrar parameter is no longer required) and will be removed in a future version of the Microsoft Mixed Reality Toolkit.")]
+        public MixedRealityInputSystem(
+            IMixedRealityServiceRegistrar registrar,
+            MixedRealityInputSystemProfile profile) : this(profile)
+        {
+            Registrar = registrar;
+        }
+
+        #endregion
     }
 }
