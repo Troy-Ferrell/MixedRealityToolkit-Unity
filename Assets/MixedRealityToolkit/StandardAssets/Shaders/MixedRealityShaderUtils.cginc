@@ -27,5 +27,20 @@ inline float PointVsBox(float3 worldPosition, float3 boxSize, float4x4 boxInvers
 }
 #endif
 
+float4 is_gt(float4 x, float4 y) {
+    return max(sign(x - y), 0.0);
+}
+
+float4 is_lt(float4 x, float4 y) {
+    return max(sign(y - x), 0.0);
+}
+
+float is_gt(float x, float y) {
+    return max(sign(x - y), 0.0);
+}
+
+float i_lt(float x, float y) {
+    return max(sign(y - x), 0.0);
+}
 
 #endif

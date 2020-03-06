@@ -665,10 +665,12 @@ Shader "Mixed Reality Toolkit/Standard"
                     o.scale.y = o.scale.y;
 
 #if defined(_BORDER_LIGHT) 
+                    borderWidth = IF(is_gt(areaYZ, areaXZ) * is_gt(areaYZ, areaXY), borderWidth * minOverMiddleScale, borderWidth);
+                    /*
                     if (areaYZ > areaXZ && areaYZ > areaXY)
                     {
                         borderWidth *= minOverMiddleScale;
-                    }
+                    }*/
 #endif
                 }
                 else if (abs(localNormal.y) == 1.0) // X,Z plane.
@@ -677,10 +679,13 @@ Shader "Mixed Reality Toolkit/Standard"
                     o.scale.y = o.scale.z;
 
 #if defined(_BORDER_LIGHT) 
+                    borderWidth = IF(is_gt(areaXZ, areaXY) * is_gt(areaXZ, areaYZ), borderWidth * minOverMiddleScale, borderWidth);
+                    
+                    /*
                     if (areaXZ > areaXY && areaXZ > areaYZ)
                     {
                         borderWidth *= minOverMiddleScale;
-                    }
+                    }*/
 #endif
                 }
                 else  // X,Y plane.
@@ -689,10 +694,12 @@ Shader "Mixed Reality Toolkit/Standard"
                     o.scale.y = o.scale.y;
 
 #if defined(_BORDER_LIGHT) 
+                    borderWidth = IF(is_gt(areaXY, areaYZ) * is_gt(areaXY, areaXZ), borderWidth * minOverMiddleScale, borderWidth);
+                    /*
                     if (areaXY > areaYZ && areaXY > areaXZ)
                     {
                         borderWidth *= minOverMiddleScale;
-                    }
+                    }*/
 #endif
                 }
 
@@ -839,6 +846,13 @@ Shader "Mixed Reality Toolkit/Standard"
 
                 _RoundCornersRadius = clamp(_RoundCornersRadius, 0, 0.5);
 
+                /*
+                fixed op1 = IF(i.uv.y > 0.5, _RoundCornersRadius.x, _RoundCornersRadius.w);
+                fixed op2 = IF(i.uv.y > 0.5, _RoundCornersRadius.y, _RoundCornersRadius.z);
+                
+                currentCornerRadius = IF(i.uv.x < 0.5, op1, op2);
+                */     
+
                 if (i.uv.x < 0.5)
                 {
                     if (i.uv.y > 0.5)
@@ -861,6 +875,7 @@ Shader "Mixed Reality Toolkit/Standard"
                         currentCornerRadius = _RoundCornersRadius.z;
                     }
                 }
+                
 #else 
                 currentCornerRadius = _RoundCornerRadius;
 #endif
